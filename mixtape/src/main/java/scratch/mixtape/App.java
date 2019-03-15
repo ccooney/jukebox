@@ -5,6 +5,7 @@ import java.io.IOError;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import scratch.mixtape.io.MixTapeIO;
@@ -52,6 +53,13 @@ public class App {
 		}
 
 
+		try {
+			io.write(outFile, mt);
+		} catch (JsonProcessingException e) {
+			System.out.println(String.format("Error writing mixtape: %s", e.getMessage()));
+		} catch (IOException e) {
+			System.out.println(String.format("Error writing mixtape: %s", e.getMessage()));
+		}
 		return 0;
 	}
 }
