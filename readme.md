@@ -3,11 +3,13 @@ building
 
 running
 
+in order to run this project, run the following after building:
+
 ```
 java -jar target/mixtape-0.0.1-SNAPSHOT.jar <in> <change> <out>
 ```
 
-.h3 changes for large file sizes
+h3. changes for large file sizes
 
 in order to scale to large datasets and change orders, we xan implement
 the following changes:
