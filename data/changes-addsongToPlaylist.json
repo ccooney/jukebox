@@ -1,0 +1,8 @@
+{
+	"addSongToPlaylist": [
+		{
+			"songId": 5,
+			"playlistId": 2
+		}
+	]
+}
