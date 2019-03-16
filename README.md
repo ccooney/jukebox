@@ -18,26 +18,26 @@ java -jar target/mixtape-0.0.1-SNAPSHOT.jar <in> <change> <out>
 changes is a json file matching the following structure
 ```json
 {
-  addSongToPlaylist [
+  "addSongToPlaylist": [
     {
-    	songId: 1,
-    	playlistId: 1
+    	"songId": 1,
+    	"playlistId": 1
     }
   ],
-  addUserPlaylist: [
+  "addUserPlaylist": [
     {
-    	userId: 1,
-    	playlist: [
+    	"userId": 1,
+    	"playlist": [
     		{
-    			playlist_id: 1,
-    			songs: [1,2,3]
+    			"playlist_id": 1,
+    			"songs": [1,2,3]
     		}
     	]
     }
   ],
-  removePlaylist: [
+  "removePlaylist": [
     {
-    	playlistId: 1
+    	"playlistId": 1
     }
   ]
 }
