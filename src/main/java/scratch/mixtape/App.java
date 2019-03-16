@@ -14,7 +14,9 @@ import scratch.mixtape.model.AddSongToPlaylist;
 import scratch.mixtape.model.AddUserPlaylist;
 import scratch.mixtape.model.Changes;
 import scratch.mixtape.model.Mixtape;
+import scratch.mixtape.model.Playlist;
 import scratch.mixtape.model.RemovePlaylist;
+import scratch.mixtape.model.User;
 
 /**
  * Hello world!
@@ -44,9 +46,9 @@ public class App {
 		Mixtape mt = null;
 
 		try {
-			 mt = io.read(inFile, Mixtape.class);
+			mt = io.read(inFile, Mixtape.class);
 		} catch (FileNotFoundException e) {
-			System.out.println("unable to find file "+inFile);
+			System.out.println("unable to find file " + inFile);
 			return 1;
 		} catch (JsonParseException | JsonMappingException e) {
 
@@ -67,7 +69,6 @@ public class App {
 			System.out.println(String.format("Error reading change file: %s", e.getMessage()));
 		}
 
-
 		try {
 			io.write(outFile, mt);
 		} catch (JsonProcessingException e) {
@@ -86,26 +87,51 @@ public class App {
 	}
 
 	private void removePlaylists(Mixtape mt, List<RemovePlaylist> removePlaylist) {
-		if (removePlaylist==null) {
+		if (removePlaylist == null) {
 			return;
+		}
+
+		for (RemovePlaylist remove : removePlaylist) {
+			for (Playlist playlist : mt.getPlaylists()) {
+				if (playlist.getId() == remove.getPlaylistId()) {
+					mt.getPlaylists().remove(playlist);
+
+				}
+			}
 		}
 		// TODO Auto-generated method stub
 
 	}
 
 	private void addUserPlaylists(Mixtape mt, List<AddUserPlaylist> addUserPlaylist) {
-		if (addUserPlaylist==null) {
+		if (addUserPlaylist == null) {
 			return;
 		}
-		// TODO Auto-generated method stub
+
+		for (AddUserPlaylist add : addUserPlaylist) {
+			if (mt.validuser(add.getUserId()) && add.getPlaylist().getSongs().size() > 0) {
+				mt.getPlaylists().add(add.getPlaylist());
+			}
+		}
 
 	}
 
 	private void addSongs(Mixtape mt, List<AddSongToPlaylist> addSongToPlaylist) {
-		if (addSongToPlaylist==null) {
+		if (addSongToPlaylist == null) {
 			return;
 		}
-		// TODO Auto-generated method stub
+
+		for (AddSongToPlaylist add : addSongToPlaylist) {
+			if (mt.validSong(add.getSongId())) {
+				for (Playlist pl : mt.getPlaylists()) {
+					if (pl.getId() == add.getPlaylistId()) {
+						pl.getSongs().add(add.getSongId());
+					}
+				}
+			}
+		}
 
 	}
+
+
 }
