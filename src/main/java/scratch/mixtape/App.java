@@ -1,23 +1,16 @@
 package scratch.mixtape;
 
 import java.io.FileNotFoundException;
-import java.io.IOError;
 import java.io.IOException;
-import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import scratch.mixtape.io.ObjectIO;
-import scratch.mixtape.model.AddSongToPlaylist;
-import scratch.mixtape.model.AddUserPlaylist;
 import scratch.mixtape.model.ChangeException;
 import scratch.mixtape.model.Changes;
 import scratch.mixtape.model.Mixtape;
-import scratch.mixtape.model.Playlist;
-import scratch.mixtape.model.RemovePlaylist;
-import scratch.mixtape.model.User;
 
 /**
  * Hello world!
@@ -86,59 +79,11 @@ public class App {
 	}
 
 	private void applyChanges(Mixtape mt, Changes changes) throws ChangeException {
-		addSongs(mt, changes.getAddSongToPlaylist());
-		addUserPlaylists(mt, changes.getAddUserPlaylist());
-		removePlaylists(mt, changes.getRemovePlaylist());
+		MixtapeChanges.addSongs(mt, changes.getAddSongToPlaylist());
+		MixtapeChanges.addUserPlaylists(mt, changes.getAddUserPlaylist());
+		MixtapeChanges.removePlaylists(mt, changes.getRemovePlaylist());
 
 	}
 
-	private void removePlaylists(Mixtape mt, List<RemovePlaylist> removePlaylist) {
-		if (removePlaylist == null) {
-			return;
-		}
-
-		for (RemovePlaylist remove : removePlaylist) {
-			for (Playlist playlist : mt.getPlaylists()) {
-				if (playlist.getId() == remove.getPlaylistId()) {
-					mt.getPlaylists().remove(playlist);
-
-				}
-			}
-		}
-
-	}
-
-	private void addUserPlaylists(Mixtape mt, List<AddUserPlaylist> addUserPlaylist) throws ChangeException {
-		if (addUserPlaylist == null) {
-			return;
-		}
-
-		for (AddUserPlaylist add : addUserPlaylist) {
-			mt.validuser(add.getUserId());
-			mt.validPlaylist(add.getPlaylist());
-
-			if (add.getPlaylist().getSongs().isEmpty()) {
-				throw new ChangeException("attempted to add empty playlist");
-			}
-			mt.getPlaylists().add(add.getPlaylist());
-		}
-	}
-
-	private void addSongs(Mixtape mt, List<AddSongToPlaylist> addSongToPlaylist) throws ChangeException {
-		if (addSongToPlaylist == null) {
-			return;
-		}
-
-		for (AddSongToPlaylist add : addSongToPlaylist) {
-			mt.validSong(add.getSongId());
-			for (Playlist pl : mt.getPlaylists()) {
-				if (pl.getId() == add.getPlaylistId()) {
-					pl.getSongs().add(add.getSongId());
-				}
-
-			}
-		}
-
-	}
 
 }
