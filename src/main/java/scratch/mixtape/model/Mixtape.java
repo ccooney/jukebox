@@ -11,23 +11,29 @@ public class Mixtape {
 	private List<Playlist> playlists;
 	private List<Song> songs;
 
-	public boolean validuser(int userId) {
+	public void validuser(int userId) throws ChangeException {
 		for (User u : getUsers()) {
 			if (u.getId() == userId) {
-				return true;
+				return;
 			}
 		}
 
-		return false;
+		throw new ChangeException("user "+userId+" not present");
 	}
 
-	public boolean validSong(int songId) {
+	public void validSong(int songId) throws ChangeException {
         for(Song s: getSongs()) {
         	if (s.getId()==songId) {
-        		return true;
+        		return;
         	}
         }
 
-        return false;
+        throw new ChangeException("song "+songId+" not present");
     }
+
+	public void validPlaylist(Playlist pl) throws ChangeException {
+		for (int songId: pl.getSongs()) {
+			validSong(songId);
+		}
+	}
 }

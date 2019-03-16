@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import scratch.mixtape.io.ObjectIO;
 import scratch.mixtape.model.AddSongToPlaylist;
 import scratch.mixtape.model.AddUserPlaylist;
+import scratch.mixtape.model.ChangeException;
 import scratch.mixtape.model.Changes;
 import scratch.mixtape.model.Mixtape;
 import scratch.mixtape.model.Playlist;
@@ -65,8 +66,13 @@ public class App {
 			applyChanges(mt, changes);
 		} catch (JsonProcessingException e) {
 			System.out.println(String.format("Error reading change file: %s", e.getMessage()));
+			return 1;
 		} catch (IOException e) {
 			System.out.println(String.format("Error reading change file: %s", e.getMessage()));
+			return 1;
+		} catch (ChangeException e) {
+			System.out.println(String.format("Error updating mixtape: %s", e.getMessage()));
+			return 1;
 		}
 
 		try {
@@ -79,7 +85,7 @@ public class App {
 		return 0;
 	}
 
-	private void applyChanges(Mixtape mt, Changes changes) {
+	private void applyChanges(Mixtape mt, Changes changes) throws ChangeException {
 		addSongs(mt, changes.getAddSongToPlaylist());
 		addUserPlaylists(mt, changes.getAddUserPlaylist());
 		removePlaylists(mt, changes.getRemovePlaylist());
@@ -99,39 +105,40 @@ public class App {
 				}
 			}
 		}
-		// TODO Auto-generated method stub
 
 	}
 
-	private void addUserPlaylists(Mixtape mt, List<AddUserPlaylist> addUserPlaylist) {
+	private void addUserPlaylists(Mixtape mt, List<AddUserPlaylist> addUserPlaylist) throws ChangeException {
 		if (addUserPlaylist == null) {
 			return;
 		}
 
 		for (AddUserPlaylist add : addUserPlaylist) {
-			if (mt.validuser(add.getUserId()) && add.getPlaylist().getSongs().size() > 0) {
-				mt.getPlaylists().add(add.getPlaylist());
-			}
-		}
+			mt.validuser(add.getUserId());
+			mt.validPlaylist(add.getPlaylist());
 
+			if (add.getPlaylist().getSongs().isEmpty()) {
+				throw new ChangeException("attempted to add empty playlist");
+			}
+			mt.getPlaylists().add(add.getPlaylist());
+		}
 	}
 
-	private void addSongs(Mixtape mt, List<AddSongToPlaylist> addSongToPlaylist) {
+	private void addSongs(Mixtape mt, List<AddSongToPlaylist> addSongToPlaylist) throws ChangeException {
 		if (addSongToPlaylist == null) {
 			return;
 		}
 
 		for (AddSongToPlaylist add : addSongToPlaylist) {
-			if (mt.validSong(add.getSongId())) {
-				for (Playlist pl : mt.getPlaylists()) {
-					if (pl.getId() == add.getPlaylistId()) {
-						pl.getSongs().add(add.getSongId());
-					}
+			mt.validSong(add.getSongId());
+			for (Playlist pl : mt.getPlaylists()) {
+				if (pl.getId() == add.getPlaylistId()) {
+					pl.getSongs().add(add.getSongId());
 				}
+
 			}
 		}
 
 	}
-
 
 }
