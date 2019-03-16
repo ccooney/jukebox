@@ -1,5 +1,6 @@
 package scratch.mixtape.model;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import lombok.Data;
@@ -10,6 +11,12 @@ public class Mixtape {
 	private List<User> users;
 	private List<Playlist> playlists;
 	private List<Song> songs;
+
+	public Mixtape() {
+		users = new LinkedList<User>();
+		playlists = new LinkedList<Playlist>();
+		songs = new LinkedList<Song>();
+	}
 
 	public void validuser(int userId) throws ChangeException {
 		for (User u : getUsers()) {

@@ -10,7 +10,7 @@ import scratch.mixtape.model.Playlist;
 import scratch.mixtape.model.RemovePlaylist;
 
 public class MixtapeChanges {
-	public static  void removePlaylists(Mixtape mt, List<RemovePlaylist> removePlaylist) {
+	public static  void removePlaylists(Mixtape mt, List<RemovePlaylist> removePlaylist) throws ChangeException {
 		if (removePlaylist == null) {
 			return;
 		}
@@ -19,9 +19,12 @@ public class MixtapeChanges {
 			for (Playlist playlist : mt.getPlaylists()) {
 				if (playlist.getId() == remove.getPlaylistId()) {
 					mt.getPlaylists().remove(playlist);
+					return;
 
 				}
+				throw new ChangeException("playlist "+playlist.getId()+" not found");
 			}
+
 		}
 
 	}
